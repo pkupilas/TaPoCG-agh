@@ -6,34 +6,46 @@ using UnityStandardAssets.CrossPlatformInput;
 public class Player : MonoBehaviour
 {
 
-    private Vector2 _move;
-    private float _move_acceleration = 10f;
-    private float _jump_acceleration = 300f;
-    private Rigidbody2D _rigidbody;
+    public Transform groundChecker;
 
+    private Vector2 _targetDistance;
+    private float _move_acceleration = 15f;
+    private float _jump_acceleration = 6f;
+    private Rigidbody2D _rigidbody;
+    private float _horizontalMoveInput;
+    private bool _isJumping;
+    private bool _grounded;
 
 	// Use this for initialization
 	private void Start ()
 	{
-	    _rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
 	}
-	
-	// Update is called once per frame
-	private void Update ()
-	{
-	    var h = CrossPlatformInputManager.GetAxis("Horizontal");
-	    var v = CrossPlatformInputManager.GetAxis("Vertical");
 
-        _move = (Vector2.right*h).normalized;
-        _rigidbody.AddForce(_move * _move_acceleration, ForceMode2D.Force);
+    private void Update()
+    {
+        _grounded = Physics2D.Linecast(transform.position, groundChecker.position, 1 << LayerMask.NameToLayer("Ground"));
+        _targetDistance = Vector2.zero;
+        _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
+        _isJumping = CrossPlatformInputManager.GetButtonDown("Space");
+
+        _targetDistance = Vector2.right * Time.deltaTime * _move_acceleration * _horizontalMoveInput;
+
+        if (_targetDistance != Vector2.zero)
+        {
+            RotateIfChangeDirection();
+            _rigidbody.velocity += _targetDistance;
+        }
+
+        if (_grounded && _isJumping)
+        {
+            _grounded = false;
+            _rigidbody.velocity += Vector2.up * _jump_acceleration;
+        }
     }
 
-    private void OnCollisionStay2D(Collision2D other)
+    private void RotateIfChangeDirection()
     {
-        var jump = CrossPlatformInputManager.GetButtonDown("Space");
-        if (jump && other.gameObject.CompareTag("Ground"))
-        {
-            _rigidbody.AddForce(Vector2.up * _jump_acceleration, ForceMode2D.Force);
-        }
+        transform.eulerAngles = _targetDistance.x < 0 ? new Vector2(0, 0) : new Vector2(0, 180);
     }
 }
