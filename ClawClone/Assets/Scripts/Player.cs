@@ -5,7 +5,6 @@ using UnityStandardAssets.CrossPlatformInput;
 
 public class Player : MonoBehaviour
 {
-
     public Transform groundChecker;
 
     private Vector2 _targetDistance;                    // way to go by player
@@ -16,10 +15,13 @@ public class Player : MonoBehaviour
     private bool _isJumping;
     private bool _grounded;
 
-	// Use this for initialization
-	private void Start ()
+    private Animator _anim;
+
+    // Use this for initialization
+    private void Start ()
 	{
         _rigidbody = GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
 	}
 
     private void Update()
@@ -37,6 +39,17 @@ public class Player : MonoBehaviour
         {
             RotateIfChangeDirection();
             _rigidbody.velocity += _targetDistance;
+        }
+
+        // if arrow pressed - walk animation
+        if (_horizontalMoveInput != 0)
+        {
+            _anim.SetBool("isWalking", true);
+            _anim.SetFloat("inputX", CrossPlatformInputManager.GetAxisRaw("Horizontal"));
+        }
+        else
+        {
+            _anim.SetBool("isWalking", false);
         }
 
         //check if player is on ground and if space has been pressed
