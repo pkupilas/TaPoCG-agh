@@ -2,33 +2,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class Treasure : Item
 {
 
-    [SerializeField] private int points;
+    [SerializeField]
+    private int _points = 1;
+    [SerializeField]
+    private bool _isKinematicAndTrigger = true;          // Defines how the treasure's rigidbody behaves. Set in inspector.
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    void OnTriggerEnter2D(Collider2D other)
+    void Awake()
     {
-        base.OnTriggerEnter2D(other);
-        Debug.Log("+" + points + " Points!");
+        SetRigidbody();
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    private void SetRigidbody()
     {
-        if (other.gameObject.GetComponent<Player>()!=null)
+        var rigidBody = gameObject.GetComponent<Rigidbody2D>();
+        var boxCollider = gameObject.GetComponent<BoxCollider2D>();
+
+        if (_isKinematicAndTrigger)
+        {
+            rigidBody.bodyType = RigidbodyType2D.Kinematic;
+            boxCollider.isTrigger = true;
+        }
+        else
+        {
+            rigidBody.bodyType = RigidbodyType2D.Dynamic;
+            boxCollider.isTrigger = false;
+        }
+    }
+
+    protected override void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.GetComponent<Player>() != null)
+        {
+            base.OnTriggerEnter2D(other);
+            AddPoints();
+        }
+    }
+    
+    protected override void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.GetComponent<Player>() != null)
         {
             base.OnCollisionEnter2D(other);
+            AddPoints();
         }
-        Debug.Log("Collision entered.");
     }
+
+    // TODO: Implement when UI will be created.
+    private void AddPoints()
+    {
+        Debug.Log("+" + _points + " Points!");
+    }
+
 }
