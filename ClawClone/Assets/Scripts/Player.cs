@@ -15,14 +15,21 @@ public class Player : MonoBehaviour
     private bool _isJumping;
     private bool _grounded;
 
+    private float health = 100;
+    private float maxHealth = 100;
+
     private Animator _anim;
+    private HealthBar healthBar;
 
     // Use this for initialization
     private void Start ()
 	{
         _rigidbody = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
-	}
+        healthBar = GetComponent<HealthBar>();
+
+        healthBar.UpdateHealthBar(100, 1);
+    }
 
     private void Update()
     {
@@ -58,11 +65,32 @@ public class Player : MonoBehaviour
             _grounded = false;
             _rigidbody.velocity += Vector2.up * _jump_acceleration;
         }
+
+        // for testing
+        if(CrossPlatformInputManager.GetButtonDown("Fire1"))
+        {
+            TakeDamage(-10);
+        }
     }
 
     //rotate player to the moving direction
     private void RotateIfChangeDirection()
     {
         transform.eulerAngles = _targetDistance.x < 0 ? new Vector2(0, 0) : new Vector2(0, 180);
+    }
+
+    private void TakeDamage(float value)
+    {
+        health += value;
+        if (health <= 0)
+        {
+            Debug.Log("Dead");
+            health = 0;
+            healthBar.UpdateHealthBar(0, 0);
+        }
+        else
+        {
+            healthBar.UpdateHealthBar(health, health / maxHealth);
+        }
     }
 }
