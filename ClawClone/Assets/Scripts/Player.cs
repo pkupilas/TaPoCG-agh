@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -18,8 +19,12 @@ public class Player : MonoBehaviour
     private float health = 100;
     private float maxHealth = 100;
 
+    private int points = 0;
+
     private Animator _anim;
     private HealthBar healthBar;
+    [SerializeField]
+    private Text pointsLabel;
 
     // Use this for initialization
     private void Start ()
@@ -29,6 +34,7 @@ public class Player : MonoBehaviour
         healthBar = GetComponent<HealthBar>();
 
         healthBar.UpdateHealthBar(100, 1);
+        pointsLabel.text = "0";
     }
 
     private void Update()
@@ -92,5 +98,11 @@ public class Player : MonoBehaviour
         {
             healthBar.UpdateHealthBar(health, health / maxHealth);
         }
+    }
+
+    public void gainPoints(int amount)
+    {
+        points += amount;
+        pointsLabel.text = points.ToString();
     }
 }

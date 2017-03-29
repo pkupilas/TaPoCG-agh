@@ -37,19 +37,21 @@ public class Treasure : Item
 
     protected override void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.GetComponent<Player>() != null)
+        Player player = other.gameObject.GetComponent<Player>();
+        if (player != null)
         {
             base.OnTriggerEnter2D(other);
-            AddPoints();
+            player.gainPoints(_points);
         }
     }
     
     protected override void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.GetComponent<Player>() != null)
+        Player player = other.gameObject.GetComponent<Player>();
+        if (player != null)
         {
             base.OnCollisionEnter2D(other);
-            AddPoints();
+            player.gainPoints(_points);
         }
     }
 
