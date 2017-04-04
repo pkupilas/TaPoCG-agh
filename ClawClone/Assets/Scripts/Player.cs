@@ -13,13 +13,15 @@ public class Player : MonoBehaviour
     private float _jump_acceleration = 6f;
     private Rigidbody2D _rigidbody;
     private float _horizontalMoveInput;
-    private bool _isJumping;
+    private bool _jumpPressed;
+    private bool _canRejump;
     private bool _grounded;
 
     private float health = 100;
     private float maxHealth = 100;
 
-    private int points = 0;
+    private int _points = 0;
+    private ExtraSkill.Skill _skill;
 
     private Animator _anim;
     private HealthBar healthBar;
@@ -43,7 +45,7 @@ public class Player : MonoBehaviour
         _grounded = Physics2D.Linecast(transform.position, groundChecker.position, 1 << LayerMask.NameToLayer("Ground"));
         _targetDistance = Vector2.zero;
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
-        _isJumping = CrossPlatformInputManager.GetButtonDown("Space");
+        _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
 
         //init way to go
         _targetDistance = Vector2.right * Time.deltaTime * _move_acceleration * _horizontalMoveInput;
@@ -66,14 +68,21 @@ public class Player : MonoBehaviour
         }
 
         //check if player is on ground and if space has been pressed
-        if (_grounded && _isJumping)
+        if (_grounded && _jumpPressed)
         {
             _grounded = false;
+            _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
+            _rigidbody.velocity += Vector2.up * _jump_acceleration;
+        }
+        else if (!_grounded && _canRejump && _jumpPressed)
+        {
+            _canRejump = false;
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
             _rigidbody.velocity += Vector2.up * _jump_acceleration;
         }
 
         // for testing
-        if(CrossPlatformInputManager.GetButtonDown("Fire1"))
+        if (CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
             TakeDamage(-10);
         }
@@ -102,7 +111,21 @@ public class Player : MonoBehaviour
 
     public void gainPoints(int amount)
     {
-        points += amount;
-        pointsLabel.text = points.ToString();
+        _points += amount;
+        pointsLabel.text = _points.ToString();
+    }
+
+    public void changeCurrentSkill(ExtraSkill.Skill skill)
+    {
+        _skill = skill;
+
+        if (_skill.Equals(ExtraSkill.Skill.Run))
+        {
+            _move_acceleration = 30f;
+        }
+        else
+        {
+            _move_acceleration = 15f;
+        }
     }
 }
