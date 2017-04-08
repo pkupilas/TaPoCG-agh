@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ExtraSkill : Item {
 
-    public enum Skill { DoubleJump, Run};
+    public enum Skill { DoubleJump, Run, None};
 
     [SerializeField]
     private Skill _skill;

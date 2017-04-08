@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
     private HealthBar healthBar;
     [SerializeField]
     private Text pointsLabel;
+    [SerializeField]
+    private SkillPanel _skillPanel;
 
     // Use this for initialization
     private void Start ()
@@ -122,10 +124,22 @@ public class Player : MonoBehaviour
         if (_skill.Equals(ExtraSkill.Skill.Run))
         {
             _move_acceleration = 30f;
+            _skillPanel.changeSkill(skill);
         }
         else
         {
             _move_acceleration = 15f;
+            _skillPanel.changeSkill(skill);
+        }
+
+        GameObject timer = GameObject.Find("Timer(Clone)"); // ugly but instantiating adds 'clone' to prefab name
+        if (timer != null)
+        {
+            timer.GetComponent<Timer>().reset();
+        } 
+        else
+        {
+            Instantiate(Resources.Load("Timer"), GameObject.Find("SkillPanel").transform);
         }
     }
 }
