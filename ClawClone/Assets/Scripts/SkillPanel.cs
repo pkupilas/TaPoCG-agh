@@ -19,7 +19,7 @@ public class SkillPanel : MonoBehaviour {
         _jumpSlot = Resources.Load<Sprite>("jump_slot");
     }
 	
-    public void changeSkill(ExtraSkill.Skill skill)
+    public void ChangeSkill(ExtraSkill.Skill skill)
     {
         if (skill.Equals(ExtraSkill.Skill.DoubleJump))
         {

@@ -5,27 +5,27 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour {
 
-    private float timeLeft = 5.0f;
-    private Text text;
+    private float _timeLeft = 5.0f;
+    private Text _text;
 
     void Start()
     {
-        text = GetComponent<Text>();
+        _text = GetComponent<Text>();
     }
 
     void Update()
     {
-        timeLeft -= Time.deltaTime;
-        text.text = Mathf.Round(timeLeft).ToString();
-        if (timeLeft < 0)
+        _timeLeft -= Time.deltaTime;
+        _text.text = Mathf.Round(_timeLeft).ToString();
+        if (_timeLeft < 0)
         {
-            GameObject.Find("Player").GetComponent<Player>().changeCurrentSkill(ExtraSkill.Skill.None);
+            GameObject.Find("Player").GetComponent<Player>().ChangeCurrentSkill(ExtraSkill.Skill.None);
             Destroy(gameObject);
         }
     }
 
     public void reset()
     {
-        timeLeft = 5.0f;
+        _timeLeft = 5.0f;
     }
 }

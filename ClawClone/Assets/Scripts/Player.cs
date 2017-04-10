@@ -9,24 +9,24 @@ public class Player : MonoBehaviour
     public Transform groundChecker;
 
     private Vector2 _targetDistance;                    // way to go by player
-    private float _move_acceleration = 15f;
-    private float _jump_acceleration = 6f;
+    private float _moveAcceleration = 15f;
+    private float _jumpAcceleration = 6f;
     private Rigidbody2D _rigidbody;
     private float _horizontalMoveInput;
     private bool _jumpPressed;
     private bool _canRejump;
     private bool _grounded;
 
-    private float health = 100;
-    private float maxHealth = 100;
+    private float _health = 100;
+    private float _maxHealth = 100;
 
     private int _points = 0;
     private ExtraSkill.Skill _skill;
 
     private Animator _anim;
-    private HealthBar healthBar;
+    private HealthBar _healthBar;
     [SerializeField]
-    private Text pointsLabel;
+    private Text _pointsLabel;
     [SerializeField]
     private SkillPanel _skillPanel;
 
@@ -35,10 +35,10 @@ public class Player : MonoBehaviour
 	{
         _rigidbody = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
-        healthBar = GetComponent<HealthBar>();
+        _healthBar = GetComponent<HealthBar>();
 
-        healthBar.UpdateHealthBar(100, 1);
-        pointsLabel.text = "0";
+        _healthBar.UpdateHealthBar(100, 1);
+        _pointsLabel.text = "0";
     }
 
     private void Update()
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
 
         //init way to go
-        _targetDistance = Vector2.right * Time.deltaTime * _move_acceleration * _horizontalMoveInput;
+        _targetDistance = Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
 
         if (_targetDistance != Vector2.zero)
         {
@@ -74,13 +74,13 @@ public class Player : MonoBehaviour
         {
             _grounded = false;
             _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
-            _rigidbody.velocity += Vector2.up * _jump_acceleration;
+            _rigidbody.velocity += Vector2.up * _jumpAcceleration;
         }
         else if (!_grounded && _canRejump && _jumpPressed)
         {
             _canRejump = false;
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
-            _rigidbody.velocity += Vector2.up * _jump_acceleration;
+            _rigidbody.velocity += Vector2.up * _jumpAcceleration;
         }
 
         // for testing
@@ -98,41 +98,41 @@ public class Player : MonoBehaviour
 
     private void TakeDamage(float value)
     {
-        health += value;
-        if (health <= 0)
+        _health += value;
+        if (_health <= 0)
         {
             Debug.Log("Dead");
-            health = 0;
-            healthBar.UpdateHealthBar(0, 0);
+            _health = 0;
+            _healthBar.UpdateHealthBar(0, 0);
         }
         else
         {
-            healthBar.UpdateHealthBar(health, health / maxHealth);
+            _healthBar.UpdateHealthBar(_health, _health / _maxHealth);
         }
     }
 
-    public void gainPoints(int amount)
+    public void GainPoints(int amount)
     {
         _points += amount;
-        pointsLabel.text = _points.ToString();
+        _pointsLabel.text = _points.ToString();
     }
 
-    public void changeCurrentSkill(ExtraSkill.Skill skill)
+    public void ChangeCurrentSkill(ExtraSkill.Skill skill)
     {
         _skill = skill;
 
         if (_skill.Equals(ExtraSkill.Skill.Run))
         {
-            _move_acceleration = 30f;
-            _skillPanel.changeSkill(skill);
+            _moveAcceleration = 30f;
+            _skillPanel.ChangeSkill(skill);
         }
         else
         {
-            _move_acceleration = 15f;
-            _skillPanel.changeSkill(skill);
+            _moveAcceleration = 15f;
+            _skillPanel.ChangeSkill(skill);
         }
 
-        GameObject timer = GameObject.Find("Timer(Clone)"); // ugly but instantiating adds 'clone' to prefab name
+        var timer = FindObjectOfType<Timer>();
         if (timer != null)
         {
             timer.GetComponent<Timer>().reset();

@@ -15,7 +15,7 @@ public class ExtraSkill : Item {
         if (player != null)
         {
             base.OnCollisionEnter2D(other);
-            player.changeCurrentSkill(_skill);
+            player.ChangeCurrentSkill(_skill);
         }
     }
 }

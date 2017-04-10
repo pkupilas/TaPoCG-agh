@@ -41,7 +41,7 @@ public class Treasure : Item
         if (player != null)
         {
             base.OnTriggerEnter2D(other);
-            player.gainPoints(_points);
+            player.GainPoints(_points);
         }
     }
     
@@ -51,7 +51,7 @@ public class Treasure : Item
         if (player != null)
         {
             base.OnCollisionEnter2D(other);
-            player.gainPoints(_points);
+            player.GainPoints(_points);
         }
     }
 
