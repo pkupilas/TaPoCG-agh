@@ -14,6 +14,7 @@ public class HealthPotion : Item {
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
+            SoundManager.instance.PlayHpUp();
             base.OnCollisionEnter2D(other);
             player.TakeDamage(hp);
         }
