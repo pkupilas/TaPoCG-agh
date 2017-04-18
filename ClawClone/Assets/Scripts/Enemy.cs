@@ -27,12 +27,6 @@ public class Enemy : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        Debug.DrawLine(transform.position, _spottingPoints[0].transform.position, Color.red);
-        Debug.DrawLine(transform.position, _spottingPoints[1].transform.position, Color.red);
-        /*SPOTTING PLAYER:
-         * - chceck distance between sprites
-         * - use fancy stuff -> Linecast checking
-         */
         LookForPlayer();
         
         if (_isPlayerSpottedOnBack || _isPlayerSpottedOnFront)
@@ -55,7 +49,7 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             var player = other.gameObject.GetComponent<Player>();
-            //player.TakeDamage(_damage);
+            player.TakeDamage(_damage);
         }
     }
 
