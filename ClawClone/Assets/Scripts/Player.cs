@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
         transform.eulerAngles = _targetDistance.x < 0 ? new Vector2(0, 0) : new Vector2(0, 180);
     }
 
-    private void TakeDamage(float value)
+    public void TakeDamage(float value)
     {
         _health += value;
         if (_health <= 0)
@@ -104,6 +104,10 @@ public class Player : MonoBehaviour
             Debug.Log("Dead");
             _health = 0;
             _healthBar.UpdateHealthBar(0, 0);
+        }
+        else if (_health > _maxHealth)
+        {
+            _health = _maxHealth;
         }
         else
         {
