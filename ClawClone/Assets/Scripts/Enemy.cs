@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,11 +9,12 @@ public class Enemy : MonoBehaviour
     private bool _isPlayerSpottedOnFront = false;
     private Animator _animator;
     private Rigidbody2D _rigidbody;
+    private Player _player;
 
     [SerializeField] private GameObject[] _spottingPoints;
     [SerializeField] private float _damage = -10f;
     [SerializeField] private float _moveAcceleration = 50f;
-    [SerializeField] private float _distance = 4f;                  // Value how far enemy can walk
+    [SerializeField] private float _distance = 3f;                  // Value how far enemy can walk
     private float _lastIdlePosition;
     private Vector2 _direction = Vector2.right;
 
@@ -21,12 +23,16 @@ public class Enemy : MonoBehaviour
 	{
 	    _animator = GetComponent<Animator>();
 	    _rigidbody = GetComponent<Rigidbody2D>();
-	    _lastIdlePosition = transform.position.x;
+	    _player = FindObjectOfType<Player>();
+        _lastIdlePosition = transform.position.x;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+        Debug.Log(_lastIdlePosition);
+        Debug.DrawLine(transform.position, _spottingPoints[0].transform.position, Color.red);
+        Debug.DrawLine(transform.position, _spottingPoints[1].transform.position, Color.red);
         LookForPlayer();
         
         if (_isPlayerSpottedOnBack || _isPlayerSpottedOnFront)
@@ -44,14 +50,14 @@ public class Enemy : MonoBehaviour
         }
 	}
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            var player = other.gameObject.GetComponent<Player>();
-            player.TakeDamage(_damage);
-        }
-    }
+    //private void OnCollisionEnter2D(Collision2D other)
+    //{
+    //    if (other.gameObject.CompareTag("Player"))
+    //    {
+    //        var player = other.gameObject.GetComponent<Player>();
+    //        player.TakeDamage(_damage);
+    //    }
+    //}
 
     private void LookForPlayer()
     {
@@ -96,6 +102,12 @@ public class Enemy : MonoBehaviour
     private void UnsetIsAttackingBool()
     {
         _animator.SetBool("isAttacking", false);
+    }
+
+    // Used in EnemyAttack animation as animation event 
+    private void DealDamage()
+    {
+        _player.TakeDamage(_damage);
     }
 
     private void Turn()
