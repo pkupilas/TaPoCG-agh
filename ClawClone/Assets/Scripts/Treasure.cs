@@ -40,6 +40,7 @@ public class Treasure : Item
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
+            SoundManager.instance.PlayCollect();
             base.OnTriggerEnter2D(other);
             player.GainPoints(_points);
         }
@@ -50,6 +51,7 @@ public class Treasure : Item
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
+            SoundManager.instance.PlayCollect();
             base.OnCollisionEnter2D(other);
             player.GainPoints(_points);
         }

@@ -14,6 +14,7 @@ public class ExtraSkill : Item {
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
+            SoundManager.instance.PlaySkill();
             base.OnCollisionEnter2D(other);
             player.ChangeCurrentSkill(_skill);
         }

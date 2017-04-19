@@ -14,14 +14,14 @@ public class Player : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private float _horizontalMoveInput;
     private bool _jumpPressed;
-    private bool _canRejump;
+    private bool _canRejump = false;
     private bool _grounded;
 
     private float _health = 100;
     private float _maxHealth = 100;
 
     private int _points = 0;
-    private ExtraSkill.Skill _skill;
+    private ExtraSkill.Skill _skill = ExtraSkill.Skill.None;
 
     private Animator _anim;
     private HealthBar _healthBar;
