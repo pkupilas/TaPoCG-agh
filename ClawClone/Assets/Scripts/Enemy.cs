@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private bool _isPlayerSpottedOnBack = false;
-    private bool _isPlayerSpottedOnFront = false;
     private Animator _animator;
     private Rigidbody2D _rigidbody;
     private Player _player;
 
-    [SerializeField] private GameObject[] _spottingPoints;
+    private GameObject _waypointOfInterest;
+    private Vector2 _direction = Vector2.right;
+    private bool _isPlayerSpottedOnBack;
+    private bool _isPlayerSpottedOnFront;
+
+    [SerializeField] private GameObject[] _patrolWaypoints;         // Waypoints between which enemy can walk {PointA, PointB}
+    [SerializeField] private GameObject[] _spottingPoints;          // Back and Front vision {BackVision, FrontVision}
     [SerializeField] private float _damage = -10f;
     [SerializeField] private float _moveAcceleration = 50f;
-    [SerializeField] private float _distance = 3f;                  // Value how far enemy can walk
-    private float _lastIdlePosition;
-    private Vector2 _direction = Vector2.right;
 
     // Use this for initialization
     void Start ()
@@ -24,15 +25,12 @@ public class Enemy : MonoBehaviour
 	    _animator = GetComponent<Animator>();
 	    _rigidbody = GetComponent<Rigidbody2D>();
 	    _player = FindObjectOfType<Player>();
-        _lastIdlePosition = transform.position.x;
+	    _waypointOfInterest = _patrolWaypoints[1];
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        Debug.Log(_lastIdlePosition);
-        Debug.DrawLine(transform.position, _spottingPoints[0].transform.position, Color.red);
-        Debug.DrawLine(transform.position, _spottingPoints[1].transform.position, Color.red);
         LookForPlayer();
         
         if (_isPlayerSpottedOnBack || _isPlayerSpottedOnFront)
@@ -49,15 +47,6 @@ public class Enemy : MonoBehaviour
             Move();
         }
 	}
-
-    //private void OnCollisionEnter2D(Collision2D other)
-    //{
-    //    if (other.gameObject.CompareTag("Player"))
-    //    {
-    //        var player = other.gameObject.GetComponent<Player>();
-    //        player.TakeDamage(_damage);
-    //    }
-    //}
 
     private void LookForPlayer()
     {
@@ -76,12 +65,10 @@ public class Enemy : MonoBehaviour
 
     private void Move()
     {
-        // Change direction of moving after distance
-        if (Mathf.Abs(transform.position.x - _lastIdlePosition) > _distance)
+        // Change direction of moving after reaching waypoint of interest
+        if (Mathf.Abs(transform.position.x - _waypointOfInterest.transform.position.x) < 0.1)
         {
             _animator.SetBool("isWalking", false);
-            _lastIdlePosition = transform.position.x;
-            _rigidbody.velocity = Vector2.zero;
             Turn();
         }
 
@@ -112,6 +99,8 @@ public class Enemy : MonoBehaviour
 
     private void Turn()
     {
+        _rigidbody.velocity = Vector2.zero;
+        _waypointOfInterest = _waypointOfInterest == _patrolWaypoints[0] ? _patrolWaypoints[1] : _patrolWaypoints[0];
         RotateEnemy();
         ChangeDirectionVector();
     }
