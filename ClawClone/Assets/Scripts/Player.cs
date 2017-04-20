@@ -82,12 +82,6 @@ public class Player : MonoBehaviour
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
             _rigidbody.velocity += Vector2.up * _jumpAcceleration;
         }
-
-        // for testing
-        if (CrossPlatformInputManager.GetButtonDown("Fire1"))
-        {
-            TakeDamage(-10);
-        }
     }
 
     //rotate player to the moving direction
