@@ -70,17 +70,34 @@ public class Player : MonoBehaviour
         }
 
         //check if player is on ground and if space has been pressed
-        if (_grounded && _jumpPressed)
+        if (_grounded)
         {
-            _grounded = false;
-            _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
-            _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            _anim.SetBool("isFalling", false);
+            if (_jumpPressed)
+            {
+                _grounded = false;
+                _anim.SetBool("isJumping", true);
+                _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
+                _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            }
+            else if (_anim.GetBool("isJumping"))
+            {
+                _anim.SetBool("isJumping", false);
+            }
         }
-        else if (!_grounded && _canRejump && _jumpPressed)
+        else if (!_grounded)
         {
-            _canRejump = false;
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
-            _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            if (_jumpPressed && _canRejump)
+            {
+                _canRejump = false;
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            }
+            else if (_rigidbody.velocity.y < 0)
+            {
+                _anim.SetBool("isFalling", true);
+            }
+
         }
     }
 
