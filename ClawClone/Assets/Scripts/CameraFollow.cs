@@ -5,14 +5,10 @@ using UnityEngine;
 public class CameraFollow : MonoBehaviour {
 
     [SerializeField]
-    private float xMax;
-    [SerializeField]
-    private float yMax;
+    private Vector2 _max;
 
     [SerializeField]
-    private float xMin;
-    [SerializeField]
-    private float yMin;
+    private Vector2 _min;
 
     private Transform target;
 
@@ -23,6 +19,6 @@ public class CameraFollow : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-        transform.position = new Vector3(Mathf.Clamp(target.position.x, xMin, xMax), Mathf.Clamp(target.position.y, yMin, yMax), transform.position.z);
+        transform.position = new Vector3(Mathf.Clamp(target.position.x, _min.x, _max.x), Mathf.Clamp(target.position.y, _min.y, _max.y), transform.position.z);
 	}
 }
