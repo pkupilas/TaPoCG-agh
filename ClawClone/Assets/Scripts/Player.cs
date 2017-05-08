@@ -8,8 +8,6 @@ public class Player : MonoBehaviour
 {
     public Transform groundChecker;
 
-    public bool onLadder;
-
     private Vector2 _targetDistance;                    // way to go by player
     private float _moveAcceleration = 15f;
     private float _jumpAcceleration = 6f;
@@ -20,6 +18,7 @@ public class Player : MonoBehaviour
     private bool _jumpPressed;
     private bool _canRejump = false;
     private bool _grounded;
+    private bool _onLadder = false;
 
     private float _health = 100;
     private float _maxHealth = 100;
@@ -64,7 +63,7 @@ public class Player : MonoBehaviour
         }
 
         // if arrow pressed - walk animation
-        if (!onLadder)
+        if (!_onLadder)
         {
             _rigidbody.gravityScale = 1;
             if (_horizontalMoveInput != 0)
@@ -178,5 +177,10 @@ public class Player : MonoBehaviour
         {
             Instantiate(Resources.Load("Timer"), GameObject.Find("SkillPanel").transform);
         }
+    }
+
+    public void ChangeOnLadder(bool onLadder)
+    {
+        _onLadder = onLadder;
     }
 }

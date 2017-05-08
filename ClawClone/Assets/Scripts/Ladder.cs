@@ -11,7 +11,7 @@ public class Ladder : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            other.GetComponent<Player>().onLadder = true;
+            other.GetComponent<Player>().ChangeOnLadder(true);
             platform.enabled = false;
         }
     }
@@ -20,7 +20,7 @@ public class Ladder : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            other.GetComponent<Player>().onLadder = false;
+            other.GetComponent<Player>().ChangeOnLadder(false);
             platform.enabled = true;
         }
     }
