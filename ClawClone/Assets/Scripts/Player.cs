@@ -11,11 +11,14 @@ public class Player : MonoBehaviour
     private Vector2 _targetDistance;                    // way to go by player
     private float _moveAcceleration = 15f;
     private float _jumpAcceleration = 6f;
+    private float _climbAcceleration = 2f;
     private Rigidbody2D _rigidbody;
     private float _horizontalMoveInput;
+    private float _verticalMoveInput;
     private bool _jumpPressed;
     private bool _canRejump = false;
     private bool _grounded;
+    private bool _onLadder = false;
 
     private float _health = 100;
     private float _maxHealth = 100;
@@ -47,6 +50,7 @@ public class Player : MonoBehaviour
         _grounded = Physics2D.Linecast(transform.position, groundChecker.position, 1 << LayerMask.NameToLayer("Ground"));
         _targetDistance = Vector2.zero;
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
+        _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
 
         //init way to go
@@ -59,20 +63,34 @@ public class Player : MonoBehaviour
         }
 
         // if arrow pressed - walk animation
-        if (_horizontalMoveInput != 0)
+        if (!_onLadder)
         {
-            _anim.SetBool("isWalking", true);
-            _anim.SetFloat("inputX", CrossPlatformInputManager.GetAxisRaw("Horizontal"));
+            _rigidbody.gravityScale = 1;
+            if (_horizontalMoveInput != 0)
+            {
+                _anim.SetBool("isWalking", true);
+                _anim.SetFloat("inputX", CrossPlatformInputManager.GetAxisRaw("Horizontal"));
+            }
+            else
+            {
+                _anim.SetBool("isWalking", false);
+            }
+
         }
         else
         {
-            _anim.SetBool("isWalking", false);
+            _rigidbody.gravityScale = 0;
+            if (_verticalMoveInput != 0)
+            {
+                _rigidbody.velocity = new Vector2(0, _climbAcceleration * _verticalMoveInput);
+            }
         }
-
+        
         //check if player is on ground and if space has been pressed
         if (_grounded)
         {
             _anim.SetBool("isFalling", false);
+            _anim.SetBool("isJumping", false);
             if (_jumpPressed)
             {
                 _grounded = false;
@@ -96,6 +114,9 @@ public class Player : MonoBehaviour
             else if (_rigidbody.velocity.y < 0)
             {
                 _anim.SetBool("isFalling", true);
+            } else
+            {
+                _anim.SetBool("isFalling", false);
             }
 
         }
@@ -156,5 +177,10 @@ public class Player : MonoBehaviour
         {
             Instantiate(Resources.Load("Timer"), GameObject.Find("SkillPanel").transform);
         }
+    }
+
+    public void ChangeOnLadder(bool onLadder)
+    {
+        _onLadder = onLadder;
     }
 }
