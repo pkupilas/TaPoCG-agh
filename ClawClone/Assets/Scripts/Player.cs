@@ -68,7 +68,6 @@ public class Player : MonoBehaviour
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
         _attackPressed = CrossPlatformInputManager.GetButtonDown("RCtrl");
         _targetDistance = Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
-        LookForEnemy();
 
         if (_attackPressed)
         {
@@ -200,6 +199,7 @@ public class Player : MonoBehaviour
     //        Improve with animation to attack 
     private void Attack(float damage)
     {
+        LookForEnemy();
         if (_frontVision != false)
         {
             var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
