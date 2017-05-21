@@ -76,11 +76,11 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        if (Time.time >= _timeSinceLastAttack + _attackCooldown)
+
+        if (Time.time >= _timeSinceLastAttack + _attackCooldown && !_player.IsDead)
         {
             _animator.SetBool("isWalking", false);
             _animator.SetBool("isAttacking", true);
-            _timeSinceLastAttack = Time.time;
         }
     }
 
@@ -115,7 +115,7 @@ public class Enemy : MonoBehaviour
     // Used in EnemyAttack animation as animation event 
     private void DealDamage()
     {
-        _player.TakeDamage(_damage);
+        _player.ChangePlayerHealth(_damage);
     }
 
     // Used in EnemyDeath animation as animation event 
