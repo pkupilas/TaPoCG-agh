@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        if (!_player.isDead())
+        if (!_player.IsDead)
         {
             _animator.SetBool("isWalking", false);
             _animator.SetBool("isAttacking", true);
@@ -97,7 +97,7 @@ public class Enemy : MonoBehaviour
     // Used in EnemyAttack animation as animation event 
     private void DealDamage()
     {
-        _player.TakeDamage(_damage);
+        _player.ChangePlayerHealth(_damage);
     }
 
     private void Turn()

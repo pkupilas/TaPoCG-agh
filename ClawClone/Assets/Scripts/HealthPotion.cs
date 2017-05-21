@@ -16,7 +16,7 @@ public class HealthPotion : Item {
         {
             SoundManager.instance.PlayHpUp();
             base.OnCollisionEnter2D(other);
-            player.TakeDamage(hp);
+            player.ChangePlayerHealth(hp);
         }
     }
 }

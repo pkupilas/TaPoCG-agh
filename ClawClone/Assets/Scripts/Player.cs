@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
-    private bool _isDead;
+    public bool IsDead { get; private set; }
 
     private Rigidbody2D _rigidbody;
     private Animator _anim;
@@ -63,67 +63,63 @@ public class Player : MonoBehaviour
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
-        _targetDistance = Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
+        _targetDistance = (IsDead) ? Vector2.zero : Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
 
-        if (!_isDead)
+        if (!_onLadder)
         {
-            if (!_onLadder)
+            _rigidbody.gravityScale = 1;
+            if (_horizontalMoveInput != 0)
             {
-                _rigidbody.gravityScale = 1;
-                if (_horizontalMoveInput != 0)
-                {
-                    _anim.SetBool("isWalking", true);
-                    _anim.SetFloat("inputX", CrossPlatformInputManager.GetAxisRaw("Horizontal"));
-                }
-                else
-                {
-                    _anim.SetBool("isWalking", false);
-                }
+                _anim.SetBool("isWalking", true);
+                _anim.SetFloat("inputX", CrossPlatformInputManager.GetAxisRaw("Horizontal"));
             }
             else
             {
-                _rigidbody.gravityScale = 0;
-                if (_verticalMoveInput != 0)
-                {
-                    _rigidbody.velocity = new Vector2(0, _climbAcceleration * _verticalMoveInput);
-                }
+                _anim.SetBool("isWalking", false);
             }
+        }
+        else
+        {
+            _rigidbody.gravityScale = 0;
+            if (_verticalMoveInput != 0)
+            {
+                _rigidbody.velocity = new Vector2(0, _climbAcceleration * _verticalMoveInput);
+            }
+        }
 
-            //check if player is on ground and if space has been pressed
-            if (_grounded)
+        //check if player is on ground and if space has been pressed
+        if (_grounded)
+        {
+            _anim.SetBool("isFalling", false);
+            _anim.SetBool("isJumping", false);
+            if (_jumpPressed)
+            {
+                _grounded = false;
+                _anim.SetBool("isJumping", true);
+                _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
+                _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            }
+            else if (_anim.GetBool("isJumping"))
+            {
+                _anim.SetBool("isJumping", false);
+            }
+        }
+        else if (!_grounded)
+        {
+            if (_jumpPressed && _canRejump)
+            {
+                _canRejump = false;
+                transform.Translate(new Vector3(_targetDistance.x, 0, 0), Space.World);
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                _rigidbody.velocity += Vector2.up * _jumpAcceleration;
+            }
+            else if (_rigidbody.velocity.y < 0)
+            {
+                _anim.SetBool("isFalling", true);
+            }
+            else
             {
                 _anim.SetBool("isFalling", false);
-                _anim.SetBool("isJumping", false);
-                if (_jumpPressed)
-                {
-                    _grounded = false;
-                    _anim.SetBool("isJumping", true);
-                    _canRejump = _skill.Equals(ExtraSkill.Skill.DoubleJump);
-                    _rigidbody.velocity += Vector2.up * _jumpAcceleration;
-                }
-                else if (_anim.GetBool("isJumping"))
-                {
-                    _anim.SetBool("isJumping", false);
-                }
-            }
-            else if (!_grounded)
-            {
-                if (_jumpPressed && _canRejump)
-                {
-                    _canRejump = false;
-                    transform.Translate(new Vector3(_targetDistance.x, 0, 0), Space.World);
-                    _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
-                    _rigidbody.velocity += Vector2.up * _jumpAcceleration;
-                }
-                else if (_rigidbody.velocity.y < 0)
-                {
-                    _anim.SetBool("isFalling", true);
-                }
-                else
-                {
-                    _anim.SetBool("isFalling", false);
-                }
-
             }
         }
     }
@@ -134,22 +130,16 @@ public class Player : MonoBehaviour
         transform.eulerAngles = _targetDistance.x < 0 ? new Vector2(0, 0) : new Vector2(0, 180);
     }
 
-    public bool isDead()
+    public void ChangePlayerHealth(float value)
     {
-        return _isDead;
-    }
-
-    public void TakeDamage(float value)
-    {
-        Debug.Log("takin damage");
         _health += value;
         if (_health <= 0)
         {
             _health = 0;
             _healthBar.UpdateHealthBar(0, 0);
-            if (!_isDead)
+            if (!IsDead)
             {
-                _isDead = true;
+                IsDead = true;
                 _anim.SetTrigger("isDead");
             }
         }
@@ -206,6 +196,6 @@ public class Player : MonoBehaviour
         transform.position = _respawnPoint.position;
         _health = StandardValues.PlayerMaxHealth;
         _healthBar.UpdateHealthBar(_health, 1);
-        _isDead = false;
+        IsDead = false;
     }
 }
