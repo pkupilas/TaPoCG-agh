@@ -59,8 +59,11 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        _animator.SetBool("isWalking", false);
-        _animator.SetBool("isAttacking", true);
+        if (!_player.isDead())
+        {
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isAttacking", true);
+        }
     }
 
     private void Move()
