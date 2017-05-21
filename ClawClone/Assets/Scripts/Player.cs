@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     private float _jumpAcceleration = StandardValues.PlayerJumpAcceleration;
     private float _climbAcceleration = StandardValues.PlayerClimbAcceleration;
     private float _health = StandardValues.PlayerMaxHealth;
+    private float _damage = StandardValues.PlayerDamage;
     private ExtraSkill.Skill _skill = ExtraSkill.Skill.None;
 
     private int _points;
@@ -18,10 +19,12 @@ public class Player : MonoBehaviour
     private float _verticalMoveInput;
 
     private bool _jumpPressed;
+    private bool _attackPressed;
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
 
+    private RaycastHit2D _frontVision;
     private Rigidbody2D _rigidbody;
     private Animator _anim;
     private HealthBar _healthBar;
@@ -33,8 +36,11 @@ public class Player : MonoBehaviour
     private SkillPanel _skillPanel;
     [SerializeField]
     private Transform _groundChecker;
+    [SerializeField]
+    private Transform _spottingPoint;
 
-    
+
+
     private void Start ()
 	{
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -60,8 +66,15 @@ public class Player : MonoBehaviour
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
+        _attackPressed = CrossPlatformInputManager.GetButtonDown("RCtrl");
         _targetDistance = Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
-        
+        LookForEnemy();
+
+        if (_attackPressed)
+        {
+            Attack(_damage);
+        }
+
         if (!_onLadder)
         {
             _rigidbody.gravityScale = 1;
@@ -181,5 +194,27 @@ public class Player : MonoBehaviour
     public void ChangeOnLadder(bool onLadder)
     {
         _onLadder = onLadder;
+    }
+
+    // TO DO: Just for testing enemy take damage. 
+    //        Improve with animation to attack 
+    private void Attack(float damage)
+    {
+        if (_frontVision != false)
+        {
+            var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
+            Debug.Log("Attackin");
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
+        }
+        Debug.Log("NoEnemyNoAttack");
+    }
+    // ------------------------------------------
+    private void LookForEnemy()
+    {
+        _frontVision = Physics2D.Linecast(transform.position, _spottingPoint.transform.position,
+            1 << LayerMask.NameToLayer("Enemy"));
     }
 }
