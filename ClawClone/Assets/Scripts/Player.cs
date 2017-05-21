@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
+    public bool IsDead { get; private set; }
 
     private Rigidbody2D _rigidbody;
     private Animator _anim;
@@ -33,6 +34,8 @@ public class Player : MonoBehaviour
     private SkillPanel _skillPanel;
     [SerializeField]
     private Transform _groundChecker;
+    [SerializeField]
+    private Transform _respawnPoint;
 
     
     private void Start ()
@@ -41,7 +44,7 @@ public class Player : MonoBehaviour
         _anim = GetComponent<Animator>();
         _healthBar = GetComponent<HealthBar>();
 
-        _healthBar.UpdateHealthBar(100, 1);
+        _healthBar.UpdateHealthBar(StandardValues.PlayerMaxHealth, 1);
         _pointsLabel.text = "0";
     }
 
@@ -60,8 +63,8 @@ public class Player : MonoBehaviour
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
-        _targetDistance = Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
-        
+        _targetDistance = (IsDead) ? Vector2.zero : Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
+
         if (!_onLadder)
         {
             _rigidbody.gravityScale = 1;
@@ -83,7 +86,7 @@ public class Player : MonoBehaviour
                 _rigidbody.velocity = new Vector2(0, _climbAcceleration * _verticalMoveInput);
             }
         }
-        
+
         //check if player is on ground and if space has been pressed
         if (_grounded)
         {
@@ -113,11 +116,11 @@ public class Player : MonoBehaviour
             else if (_rigidbody.velocity.y < 0)
             {
                 _anim.SetBool("isFalling", true);
-            } else
+            }
+            else
             {
                 _anim.SetBool("isFalling", false);
             }
-
         }
     }
 
@@ -127,14 +130,18 @@ public class Player : MonoBehaviour
         transform.eulerAngles = _targetDistance.x < 0 ? new Vector2(0, 0) : new Vector2(0, 180);
     }
 
-    public void TakeDamage(float value)
+    public void ChangePlayerHealth(float value)
     {
         _health += value;
         if (_health <= 0)
         {
-            Debug.Log("Dead");
             _health = 0;
             _healthBar.UpdateHealthBar(0, 0);
+            if (!IsDead)
+            {
+                IsDead = true;
+                _anim.SetTrigger("isDead");
+            }
         }
         else if(_health > StandardValues.PlayerMaxHealth)
         {
@@ -181,5 +188,14 @@ public class Player : MonoBehaviour
     public void ChangeOnLadder(bool onLadder)
     {
         _onLadder = onLadder;
+    }
+
+    private void Dead()
+    {
+        _anim.SetTrigger("isIdle");
+        transform.position = _respawnPoint.position;
+        _health = StandardValues.PlayerMaxHealth;
+        _healthBar.UpdateHealthBar(_health, 1);
+        IsDead = false;
     }
 }

@@ -59,8 +59,11 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        _animator.SetBool("isWalking", false);
-        _animator.SetBool("isAttacking", true);
+        if (!_player.IsDead)
+        {
+            _animator.SetBool("isWalking", false);
+            _animator.SetBool("isAttacking", true);
+        }
     }
 
     private void Move()
@@ -94,7 +97,7 @@ public class Enemy : MonoBehaviour
     // Used in EnemyAttack animation as animation event 
     private void DealDamage()
     {
-        _player.TakeDamage(_damage);
+        _player.ChangePlayerHealth(_damage);
     }
 
     private void Turn()
