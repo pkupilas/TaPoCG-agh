@@ -21,6 +21,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _moveAcceleration = 50f;
     [SerializeField] private float _health = 15f;
     [SerializeField] private float _attackCooldown = 2f;
+    [SerializeField] private bool _isDead;
+
 
     // Use this for initialization
     void Start ()
@@ -57,6 +59,7 @@ public class Enemy : MonoBehaviour
         _health += damage;
         if (_health <= 0)
         {
+            _isDead = true;
             _animator.SetTrigger("isDead");
         }
         else
@@ -76,16 +79,18 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-
         if (Time.time >= _timeSinceLastAttack + _attackCooldown && !_player.IsDead)
         {
             _animator.SetBool("isWalking", false);
             _animator.SetBool("isAttacking", true);
+            _timeSinceLastAttack = Time.time;
         }
     }
 
     private void Move()
     {
+        if (_isDead) return;
+
         // Change direction of moving after reaching waypoint of interest
         if (Mathf.Abs(transform.position.x - _waypointOfInterest.transform.position.x) < 0.1)
         {
@@ -98,6 +103,8 @@ public class Enemy : MonoBehaviour
         {
             _rigidbody.velocity = _direction * Time.deltaTime * _moveAcceleration;
         }
+
+        _animator.SetBool("isWalking", true);
     }
 
     // Used in EnemyIdle animation as animation event 
@@ -121,7 +128,8 @@ public class Enemy : MonoBehaviour
     // Used in EnemyDeath animation as animation event 
     private void DestroyEnemyIfDie()
     {
-        Destroy(transform.parent.gameObject);
+        float timeToDestroy = 2f;
+        Destroy(transform.parent.gameObject, timeToDestroy);
     }
 
     private void Turn()

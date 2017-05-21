@@ -209,13 +209,11 @@ public class Player : MonoBehaviour
         if (_frontVision != false)
         {
             var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
-            Debug.Log("Attackin");
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
             }
         }
-        Debug.Log("NoEnemyNoAttack");
     }
     // ------------------------------------------
     
