@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     private float _jumpAcceleration = StandardValues.PlayerJumpAcceleration;
     private float _climbAcceleration = StandardValues.PlayerClimbAcceleration;
     private float _health = StandardValues.PlayerMaxHealth;
+    private float _damage = StandardValues.PlayerDamage;
     private ExtraSkill.Skill _skill = ExtraSkill.Skill.None;
 
     private int _points;
@@ -18,11 +19,13 @@ public class Player : MonoBehaviour
     private float _verticalMoveInput;
 
     private bool _jumpPressed;
+    private bool _attackPressed;
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
     public bool IsDead { get; private set; }
 
+    private RaycastHit2D _frontVision;
     private Rigidbody2D _rigidbody;
     private Animator _anim;
     private HealthBar _healthBar;
@@ -35,9 +38,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Transform _groundChecker;
     [SerializeField]
+    private Transform _spottingPoint;
+    [SerializeField]
     private Transform _respawnPoint;
 
-    
     private void Start ()
 	{
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -63,7 +67,14 @@ public class Player : MonoBehaviour
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
+
+        _attackPressed = CrossPlatformInputManager.GetButtonDown("RCtrl");
         _targetDistance = (IsDead) ? Vector2.zero : Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
+
+        if (_attackPressed && !IsDead)
+        {
+            Attack(_damage);
+        }
 
         if (!_onLadder)
         {
@@ -190,6 +201,28 @@ public class Player : MonoBehaviour
         _onLadder = onLadder;
     }
 
+    // TO DO: Just for testing enemy take damage. 
+    //        Improve with animation to attack 
+    private void Attack(float damage)
+    {
+        LookForEnemy();
+        if (_frontVision != false)
+        {
+            var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
+        }
+    }
+    // ------------------------------------------
+    
+    private void LookForEnemy()
+    {
+        _frontVision = Physics2D.Linecast(transform.position, _spottingPoint.transform.position,
+            1 << LayerMask.NameToLayer("Enemy"));
+    }
+    
     private void Dead()
     {
         _anim.SetTrigger("isIdle");

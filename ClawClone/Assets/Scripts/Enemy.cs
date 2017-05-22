@@ -13,11 +13,16 @@ public class Enemy : MonoBehaviour
     private Vector2 _direction = Vector2.right;
     private bool _isPlayerSpottedOnBack;
     private bool _isPlayerSpottedOnFront;
+    private float _timeSinceLastAttack;
 
     [SerializeField] private GameObject[] _patrolWaypoints;         // Waypoints between which enemy can walk {PointA, PointB}
     [SerializeField] private GameObject[] _spottingPoints;          // Back and Front vision {BackVision, FrontVision}
     [SerializeField] private float _damage = -10f;
     [SerializeField] private float _moveAcceleration = 50f;
+    [SerializeField] private float _health = 15f;
+    [SerializeField] private float _attackCooldown = 2f;
+    [SerializeField] private bool _isDead;
+
 
     // Use this for initialization
     void Start ()
@@ -26,13 +31,13 @@ public class Enemy : MonoBehaviour
 	    _rigidbody = GetComponent<Rigidbody2D>();
 	    _player = FindObjectOfType<Player>();
 	    _waypointOfInterest = _patrolWaypoints[1];
+	    _timeSinceLastAttack = Time.time;
 	}
 	
 	// Update is called once per frame
 	void Update ()
-    {
+	{
         LookForPlayer();
-        
         if (_isPlayerSpottedOnBack || _isPlayerSpottedOnFront)
         {
             if (_isPlayerSpottedOnBack)
@@ -40,13 +45,28 @@ public class Enemy : MonoBehaviour
                 Turn();
             }
 
-	        Attack();
-	    }
-	    else
-	    {
+            Attack();
+        }
+        else
+        {
             Move();
         }
-	}
+    }
+
+    public void TakeDamage(float damage)
+    {
+        _animator.SetBool("isWalking", false);
+        _health += damage;
+        if (_health <= 0)
+        {
+            _isDead = true;
+            _animator.SetTrigger("isDead");
+        }
+        else
+        {
+            _animator.SetTrigger("isTakingDamage");
+        }
+    }
 
     private void LookForPlayer()
     {
@@ -59,15 +79,18 @@ public class Enemy : MonoBehaviour
 
     private void Attack()
     {
-        if (!_player.IsDead)
+        if (Time.time >= _timeSinceLastAttack + _attackCooldown && !_player.IsDead)
         {
             _animator.SetBool("isWalking", false);
             _animator.SetBool("isAttacking", true);
+            _timeSinceLastAttack = Time.time;
         }
     }
 
     private void Move()
     {
+        if (_isDead) return;
+
         // Change direction of moving after reaching waypoint of interest
         if (Mathf.Abs(transform.position.x - _waypointOfInterest.transform.position.x) < 0.1)
         {
@@ -80,6 +103,8 @@ public class Enemy : MonoBehaviour
         {
             _rigidbody.velocity = _direction * Time.deltaTime * _moveAcceleration;
         }
+
+        _animator.SetBool("isWalking", true);
     }
 
     // Used in EnemyIdle animation as animation event 
@@ -98,6 +123,13 @@ public class Enemy : MonoBehaviour
     private void DealDamage()
     {
         _player.ChangePlayerHealth(_damage);
+    }
+
+    // Used in EnemyDeath animation as animation event 
+    private void DestroyEnemyIfDie()
+    {
+        float timeToDestroy = 2f;
+        Destroy(transform.parent.gameObject, timeToDestroy);
     }
 
     private void Turn()

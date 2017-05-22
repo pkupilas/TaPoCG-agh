@@ -12,5 +12,6 @@ namespace Assets.Scripts.Utilities
         public const float PlayerJumpAcceleration = 6f;
         public const float PlayerClimbAcceleration = 2f;
         public const float PlayerMaxHealth = 100f;
+        public const float PlayerDamage = -10f;
     }
 }
