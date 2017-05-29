@@ -205,6 +205,7 @@ public class Player : MonoBehaviour
     //        Improve with animation to attack 
     private void Attack(float damage)
     {
+        _anim.SetTrigger("isAttacking");
         LookForEnemy();
         if (_frontVision != false)
         {
@@ -214,6 +215,11 @@ public class Player : MonoBehaviour
                 enemy.TakeDamage(damage);
             }
         }
+    }
+
+    public void Idle()
+    {
+        _anim.SetTrigger("isIdle");
     }
     // ------------------------------------------
     
@@ -225,7 +231,7 @@ public class Player : MonoBehaviour
     
     private void Dead()
     {
-        _anim.SetTrigger("isIdle");
+        Idle();
         transform.position = _respawnPoint.position;
         _health = StandardValues.PlayerMaxHealth;
         _healthBar.UpdateHealthBar(_health, 1);
