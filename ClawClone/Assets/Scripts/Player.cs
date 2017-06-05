@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        _grounded = Physics2D.Linecast(transform.position, _groundChecker.position, 1 << LayerMask.NameToLayer("Ground"));
+        _grounded = Physics2D.Linecast(transform.position, _groundChecker.position, 1 << LayerMask.NameToLayer("Jumpable"));
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
