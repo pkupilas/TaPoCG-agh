@@ -135,6 +135,16 @@ public class Player : MonoBehaviour
         }
     }
 
+    protected virtual void OnTriggerEnter2D(Collider2D other)
+    {
+        Checkpoint checkpoint = other.GetComponent<Checkpoint>();
+        if (checkpoint != null)
+        {
+            checkpoint.Visit();
+            _respawnPoint = checkpoint.transform;
+        }
+    }
+
     //rotate player to the moving direction
     private void RotateIfChangeDirection()
     {
