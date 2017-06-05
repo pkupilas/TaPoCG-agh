@@ -154,6 +154,11 @@ public class Player : MonoBehaviour
     public void ChangePlayerHealth(float value)
     {
         _health += value;
+        if (value < 0 && !_anim.GetBool("isTakingDamage"))
+        {
+            _anim.SetBool("isTakingDamage", true);
+        }
+
         if (_health <= 0)
         {
             _health = 0;
@@ -247,4 +252,11 @@ public class Player : MonoBehaviour
         _healthBar.UpdateHealthBar(_health, 1);
         IsDead = false;
     }
+
+    // Used in PlayerTakeDamage animation as animation event 
+    private void UnsetIsTakingDamageBool()
+    {
+        _anim.SetBool("isTakingDamage", false);
+    }
+
 }
