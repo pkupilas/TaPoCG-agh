@@ -143,6 +143,23 @@ public class Player : MonoBehaviour
             checkpoint.Visit();
             _respawnPoint = checkpoint.transform;
         }
+        else if (other.gameObject.layer == LayerMask.NameToLayer("Deadly"))
+        {
+            InvokeRepeating("DeadlyHurt", 0, 1);
+        }
+    }
+
+    protected virtual void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Deadly"))
+        {
+            CancelInvoke("DeadlyHurt");
+        }
+    }
+
+    private void DeadlyHurt()
+    {
+        ChangePlayerHealth(-30);
     }
 
     //rotate player to the moving direction
