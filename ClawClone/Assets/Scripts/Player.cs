@@ -4,6 +4,7 @@ using Assets.Scripts.Utilities;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -41,6 +42,7 @@ public class Player : MonoBehaviour
     private Transform _spottingPoint;
     [SerializeField]
     private Transform _respawnPoint;
+    private String _deadlyLayerName = "Deadly";
 
     private void Start ()
 	{
@@ -143,17 +145,17 @@ public class Player : MonoBehaviour
             checkpoint.Visit();
             _respawnPoint = checkpoint.transform;
         }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("Deadly"))
+        else if (other.gameObject.layer == LayerMask.NameToLayer(_deadlyLayerName))
         {
-            InvokeRepeating("DeadlyHurt", 0, 1);
+            InvokeRepeating(GetFunctionName(DeadlyHurt), 0, 1);
         }
     }
 
     protected virtual void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Deadly"))
+        if (other.gameObject.layer == LayerMask.NameToLayer(_deadlyLayerName))
         {
-            CancelInvoke("DeadlyHurt");
+            CancelInvoke(GetFunctionName(DeadlyHurt));
         }
     }
 
@@ -264,4 +266,6 @@ public class Player : MonoBehaviour
         _healthBar.UpdateHealthBar(_health, 1);
         IsDead = false;
     }
+
+    private static string GetFunctionName(Action method) { return method.Method.Name; }
 }
