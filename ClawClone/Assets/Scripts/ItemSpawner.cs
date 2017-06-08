@@ -12,7 +12,9 @@ public class ItemSpawner : MonoBehaviour
         {
             int randomIndex = Random.Range(0, spawningItems.Length);
             var boxPosition = transform.position;
-            Instantiate(spawningItems[randomIndex], boxPosition, Quaternion.identity);
+            var item = Instantiate(spawningItems[randomIndex], boxPosition, Quaternion.identity);
+            item.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            item.GetComponent<BoxCollider2D>().isTrigger = false;
         }
         else
         {
