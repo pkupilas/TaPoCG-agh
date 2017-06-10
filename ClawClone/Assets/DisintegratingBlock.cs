@@ -18,7 +18,7 @@ public class DisintegratingBlock : MonoBehaviour
         var player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
-            _animator.SetBool("isDisintegrating", true);
+            _animator.SetTrigger("isDisintegrating");
         }
     }
 
