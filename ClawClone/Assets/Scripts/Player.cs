@@ -248,6 +248,11 @@ public class Player : MonoBehaviour
             {
                 enemy.TakeDamage(damage);
             }
+            var box = _frontVision.collider.gameObject.GetComponent<Box>();
+            if (box != null)
+            {
+                box.TakeHit();
+            }
         }
     }
 
@@ -260,7 +265,7 @@ public class Player : MonoBehaviour
     private void LookForEnemy()
     {
         _frontVision = Physics2D.Linecast(transform.position, _spottingPoint.transform.position,
-            1 << LayerMask.NameToLayer("Enemy"));
+            1 << LayerMask.NameToLayer("Attackable"));
     }
     
     private void Dead()
