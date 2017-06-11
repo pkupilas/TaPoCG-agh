@@ -44,6 +44,8 @@ public class Player : MonoBehaviour
     private Transform _spottingPoint;
     [SerializeField]
     private Transform _respawnPoint;
+    [SerializeField]
+    private Transform _bulletSpawnPoint;
     private String _deadlyLayerName = "Deadly";
 
     private void Start ()
@@ -263,6 +265,14 @@ public class Player : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetWeapon(Weapon weapon)
+    {
+        _hasWeapon = weapon != null;
+        _weapon = weapon;
+        _weapon.BulletSpawnPoint = _bulletSpawnPoint;
+        _skillPanel.ChangeWeapon();
     }
 
     public void Idle()
