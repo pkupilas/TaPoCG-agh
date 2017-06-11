@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
+    private bool _hasWeapon;
     public bool IsDead { get; private set; }
 
     private RaycastHit2D _frontVision;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
     private Animator _anim;
     private HealthBar _healthBar;
     private Vector2 _targetDistance;
+    private Weapon _weapon;
 
     [SerializeField]
     private Text _pointsLabel;
@@ -42,6 +44,8 @@ public class Player : MonoBehaviour
     private Transform _spottingPoint;
     [SerializeField]
     private Transform _respawnPoint;
+    [SerializeField]
+    private Transform _bulletSpawnPoint;
     private String _deadlyLayerName = "Deadly";
 
     private void Start ()
@@ -49,6 +53,7 @@ public class Player : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
         _healthBar = GetComponent<HealthBar>();
+        _weapon = GetComponentInChildren<Weapon>();
 
         _healthBar.UpdateHealthBar(StandardValues.PlayerMaxHealth, 1);
         _pointsLabel.text = "0";
@@ -65,7 +70,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        _grounded = Physics2D.Linecast(transform.position, _groundChecker.position, 1 << LayerMask.NameToLayer("Jumpable"));
+        _grounded = Physics2D.Linecast(transform.position, _groundChecker.position, 1 << LayerMask.NameToLayer("Jumpable") | 1 << LayerMask.NameToLayer("Box"));
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
@@ -235,25 +240,39 @@ public class Player : MonoBehaviour
         _onLadder = onLadder;
     }
 
-    // TO DO: Just for testing enemy take damage. 
-    //        Improve with animation to attack 
     private void Attack(float damage)
     {
         _anim.SetTrigger("isAttacking");
-        LookForEnemy();
-        if (_frontVision != false)
+
+        if (_hasWeapon)
         {
-            var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
-            if (enemy != null)
+            _weapon.Shoot();
+        } else
+        {
+            LookForEnemy();
+            if (_frontVision != false)
             {
-                enemy.TakeDamage(damage);
-            }
-            var box = _frontVision.collider.gameObject.GetComponent<Box>();
-            if (box != null)
-            {
-                box.TakeHit();
+                var enemy = _frontVision.collider.gameObject.GetComponent<Enemy>();
+                var box = _frontVision.collider.gameObject.GetComponent<Box>();
+
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                }
+                else if (box != null)
+                {
+                    box.TakeHit();
+                }
             }
         }
+    }
+
+    public void SetWeapon(Weapon weapon)
+    {
+        _hasWeapon = weapon != null;
+        _weapon = weapon;
+        _weapon.BulletSpawnPoint = _bulletSpawnPoint;
+        _skillPanel.ChangeWeapon();
     }
 
     public void Idle()
@@ -265,7 +284,7 @@ public class Player : MonoBehaviour
     private void LookForEnemy()
     {
         _frontVision = Physics2D.Linecast(transform.position, _spottingPoint.transform.position,
-            1 << LayerMask.NameToLayer("Attackable"));
+            1 << LayerMask.NameToLayer("Enemy") | 1 << LayerMask.NameToLayer("Box"));
     }
     
     private void Dead()
