@@ -166,7 +166,10 @@ public class Player : MonoBehaviour
 
     private void DeadlyHurt()
     {
-        ChangePlayerHealth(-30);
+        if (!IsDead)
+        {
+            ChangePlayerHealth(-30);
+        }
     }
 
     //rotate player to the moving direction
@@ -178,7 +181,7 @@ public class Player : MonoBehaviour
     public void ChangePlayerHealth(float value)
     {
         _health += value;
-        if (value < 0 && !_anim.GetBool("isTakingDamage"))
+        if (value < 0 && !_anim.GetBool("isTakingDamage") && _health > 0)
         {
             _anim.SetBool("isTakingDamage", true);
         }
@@ -190,6 +193,7 @@ public class Player : MonoBehaviour
             if (!IsDead)
             {
                 IsDead = true;
+                CancelInvoke(GetFunctionName(DeadlyHurt));
                 _anim.SetTrigger("isDead");
             }
         }
