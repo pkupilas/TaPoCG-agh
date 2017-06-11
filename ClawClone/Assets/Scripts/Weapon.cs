@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Weapon : Item {
 
-    public float Damage;
-
     public Transform BulletSpawnPoint;
     public Transform bullet;
 

@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour {
     private float _moveSpeed = 0.5f;
     [SerializeField]
     private int _timeToDestroy = 1;
+    public float Damage;
 
 	void Update () {
         transform.Translate(Vector3.left * Time.deltaTime * _moveSpeed);
@@ -19,8 +20,9 @@ public class Bullet : MonoBehaviour {
 
         if (other.gameObject.GetComponent<Enemy>() != null)
         {
-            other.gameObject.GetComponent<Enemy>().TakeDamage(GetComponentInParent<Weapon>().Damage);
-        } else if (other.gameObject.GetComponent<Box>() != null)
+          other.gameObject.GetComponent<Enemy>().TakeDamage(-Damage);
+        }
+        else if (other.gameObject.GetComponent<Box>() != null)
         {
             other.gameObject.GetComponent<Box>().TakeHit();
         }
