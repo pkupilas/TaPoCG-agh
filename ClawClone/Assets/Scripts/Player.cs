@@ -289,7 +289,6 @@ public class Player : MonoBehaviour
 
     private void ChangeWeapon()
     {
-        Debug.Log(_weapon);
         if (_isUsingPaws && _hasWeapon && _weapon != null)
         {
             _isUsingPaws = false;
