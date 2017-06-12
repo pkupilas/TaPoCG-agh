@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Door : MonoBehaviour
 {
-    [SerializeField] private const int _keyCountToOpen = 3;
+    [SerializeField] private const int _keyCountToOpen = 4;
     private int _keyCount = 0;
     private Animator _animator;
 
@@ -12,6 +13,11 @@ public class Door : MonoBehaviour
     void Start ()
     {
         _animator = GetComponent<Animator>();
+    }
+
+    void Update()
+    {
+        _keyCount = Key.keyCounter;
     }
 	
 	// Update is called once per frame
@@ -21,6 +27,7 @@ public class Door : MonoBehaviour
 	    if (player != null && CheckDoorStatus())
 	    {
 	        OpenDoor();
+            SceneManager.LoadScene("MainMenu");
 	    }
 	}
 

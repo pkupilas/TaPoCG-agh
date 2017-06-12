@@ -7,7 +7,7 @@ public class Key : MonoBehaviour
 {
 
     [SerializeField] private Image[] _keyHoles;
-    private static int _keyCounter = 0;
+    public static int keyCounter = 0;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -21,7 +21,7 @@ public class Key : MonoBehaviour
 
     private void FillOneOfKeyHoles()
     {
-        _keyHoles[_keyCounter].color = Color.white;
-        _keyCounter++;
+        _keyHoles[keyCounter].color = Color.white;
+        keyCounter++;
     }
 }
