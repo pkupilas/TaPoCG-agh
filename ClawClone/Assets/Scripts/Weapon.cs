@@ -17,7 +17,8 @@ public class Weapon : Item {
         Player player = other.gameObject.GetComponent<Player>();
         if (player != null)
         {
-            base.OnTriggerEnter2D(other);
+            GetComponent<SpriteRenderer>().enabled = false;
+            GetComponent<Collider2D>().enabled = false;
             player.SetWeapon(this);
         }
     }
