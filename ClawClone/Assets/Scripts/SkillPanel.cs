@@ -14,6 +14,7 @@ public class SkillPanel : MonoBehaviour {
     private Sprite _runSlot;
     private Sprite _jumpSlot;
     private Sprite _gunSlot;
+    private Sprite _pawSlot;
 
     // Use this for initialization
     void Start () {
@@ -21,6 +22,7 @@ public class SkillPanel : MonoBehaviour {
         _runSlot = Resources.Load<Sprite>("run_slot");
         _jumpSlot = Resources.Load<Sprite>("jump_slot");
         _gunSlot = Resources.Load<Sprite>("gun_slot");
+        _pawSlot = Resources.Load<Sprite>("paw_slot");
     }
 	
     public void ChangeSkill(ExtraSkill.Skill skill)
@@ -40,8 +42,13 @@ public class SkillPanel : MonoBehaviour {
 
     }
 
-    public void ChangeWeapon()
+    public void ChangeToGun()
     {
         _weaponSlot.sprite = _gunSlot;
+    }
+
+    public void ChangeToPaw()
+    {
+        _weaponSlot.sprite = _pawSlot;
     }
 }

@@ -21,10 +21,12 @@ public class Player : MonoBehaviour
 
     private bool _jumpPressed;
     private bool _attackPressed;
+    private bool _changeWeaponPressed;
     private bool _canRejump;
     private bool _grounded;
     private bool _onLadder;
     private bool _hasWeapon;
+    private bool _isUsingPaws = true;
     public bool IsDead { get; private set; }
 
     private RaycastHit2D _frontVision;
@@ -53,7 +55,6 @@ public class Player : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
         _healthBar = GetComponent<HealthBar>();
-        _weapon = GetComponentInChildren<Weapon>();
 
         _healthBar.UpdateHealthBar(StandardValues.PlayerMaxHealth, 1);
         _pointsLabel.text = "0";
@@ -74,6 +75,7 @@ public class Player : MonoBehaviour
         _horizontalMoveInput = CrossPlatformInputManager.GetAxis("Horizontal");
         _verticalMoveInput = CrossPlatformInputManager.GetAxis("Vertical");
         _jumpPressed = CrossPlatformInputManager.GetButtonDown("Space");
+        _changeWeaponPressed = CrossPlatformInputManager.GetButtonDown("Change");
 
         _attackPressed = CrossPlatformInputManager.GetButtonDown("RCtrl");
         _targetDistance = (IsDead) ? Vector2.zero : Vector2.right * Time.deltaTime * _moveAcceleration * _horizontalMoveInput;
@@ -139,6 +141,11 @@ public class Player : MonoBehaviour
             {
                 _anim.SetBool("isFalling", false);
             }
+        }
+
+        if (_changeWeaponPressed)
+        {
+            ChangeWeapon();
         }
     }
 
@@ -248,7 +255,7 @@ public class Player : MonoBehaviour
     {
         _anim.SetTrigger("isAttacking");
 
-        if (_hasWeapon)
+        if (_hasWeapon && !_isUsingPaws)
         {
             _weapon.Shoot();
         } else
@@ -274,9 +281,25 @@ public class Player : MonoBehaviour
     public void SetWeapon(Weapon weapon)
     {
         _hasWeapon = weapon != null;
+        _isUsingPaws = false;
         _weapon = weapon;
         _weapon.BulletSpawnPoint = _bulletSpawnPoint;
-        _skillPanel.ChangeWeapon();
+        _skillPanel.ChangeToGun();
+    }
+
+    private void ChangeWeapon()
+    {
+        Debug.Log(_weapon);
+        if (_isUsingPaws && _hasWeapon && _weapon != null)
+        {
+            _isUsingPaws = false;
+            _skillPanel.ChangeToGun();
+        }
+        else
+        {
+            _isUsingPaws = true;
+            _skillPanel.ChangeToPaw();
+        }
     }
 
     public void Idle()
