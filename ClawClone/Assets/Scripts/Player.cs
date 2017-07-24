@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     private bool _onLadder;
     private bool _hasWeapon;
     private bool _isUsingPaws = true;
-    public bool IsDead { get; private set; }
+    private string _deadlyLayerName = "Deadly";
 
     private RaycastHit2D _frontVision;
     private Rigidbody2D _rigidbody;
@@ -48,7 +48,9 @@ public class Player : MonoBehaviour
     private Transform _respawnPoint;
     [SerializeField]
     private Transform _bulletSpawnPoint;
-    private String _deadlyLayerName = "Deadly";
+
+    public bool IsDead { get; private set; }
+
 
     private void Start ()
 	{
@@ -323,6 +325,7 @@ public class Player : MonoBehaviour
     }
 
     private static string GetFunctionName(Action method) { return method.Method.Name; }
+
     // Used in PlayerTakeDamage animation as animation event 
     private void UnsetIsTakingDamageBool()
     {
